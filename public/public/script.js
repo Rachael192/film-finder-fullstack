@@ -5,12 +5,12 @@ const tmdbBaseLocale = 'http://localhost:3000';
 const playBtn = document.getElementById('playBtn');
 
 const getGenres = async () => {
-   const genreRequestEndpoint = '/genre/movie/list';
-   const queryString = `?api_key=${tmdbKey}`;
+  const genreRequestEndpoint = '/genre/movie/list';
+  const queryString = `?api_key=${tmdbKey}`;
   //  const urlToFetch = tmdbBaseUrl + genreRequestEndpoint + queryString;
-   const urlToFetch = tmdbBaseLocale + genreRequestEndpoint + queryString;
+  const urlToFetch = tmdbBaseLocale + genreRequestEndpoint + queryString;
   //  return [];
-   try {
+  try {
     const response = await fetch(urlToFetch);
     if (response.ok) {
       console.log(" GOT RESPONSE: " + response.body);
@@ -20,9 +20,9 @@ const getGenres = async () => {
       console.log("Genres are: ", genreList);
       return genreList;
     }
-   } catch (e) {
+  } catch (e) {
     console.log("ERROR ", e);
-   }
+  }
 };
 
 const getMovies = async () => {
@@ -30,7 +30,7 @@ const getMovies = async () => {
   const discoverMovieEndpoint = '/discover/movie';
   const requestParams = `?api_key=${tmdbKey}&with_genres=${selectedGenre}`;
   // const urlToFetch = tmdbBaseUrl+discoverMovieEndpoint+requestParams;
-  const urlToFetch = tmdbBaseLocale+discoverMovieEndpoint+requestParams;
+  const urlToFetch = tmdbBaseLocale + discoverMovieEndpoint + requestParams;
   try {
     const response = await fetch(urlToFetch);
     if (response.ok) {
@@ -74,6 +74,22 @@ const getMovieDetails = async (movies) => {
   }
   return movieDetails;
 };
+const getRecommendedMovies = async () => {
+  const reccomendedEndpoint = '/recommendations'
+  const urlToFetch = tmdbBaseLocale + reccomendedEndpoint
+  try {
+    const response = await fetch(urlToFetch);
+    if (response.ok) {
+      const jsonResponse = await response.json();
+      console.log(" Got discover movie response ", jsonResponse);
+      const movies = jsonResponse.suggestedMovies;
+      console.log(" Got movies: ", movies);
+      return movies;
+    }
+  } catch (error) {
+    console.log(" Error while getting movies", error);
+  }
+};
 
 // Gets a list of movies and ultimately displays the info of a random movie from the list
 const showRandomMovie = async () => {
@@ -91,11 +107,11 @@ const showRandomMovie = async () => {
   // scarico i dettagli completi dei pprimi cinque film
   const movieDetails = await getMovieDetails(movies);
   displayCarousel(movieDetails); // visualizzo il carosello
-  // const recommendedMovies = await getRecommendedMovies()
-/*const recommendedMovies= [ { "id": 977294, "poster_path": "/lFFDrFLXywFhy6khHes1LCFVMsL.jpg", "title": "Tin Soldier"} ];
-console.log("Going to display recommended movies: ", recommendedMovies);
-displayRecommendedCarousel(recommendedMovies);
-*/
+  const recommendedMovies = await getRecommendedMovies()
+  //const recommendedMovies= [ { "id": 977294, "poster_path": "/lFFDrFLXywFhy6khHes1LCFVMsL.jpg", "title": "Tin Soldier"} ];
+  console.log("Going to display recommended movies: ", recommendedMovies);
+  displayRecommendedCarousel(recommendedMovies);
+
 };
 
 getGenres().then(populateGenreDropdown);

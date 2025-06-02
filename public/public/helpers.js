@@ -105,7 +105,7 @@ const createMovieOverview = (overview) => {
 
 // Returns a random movie from the first page of movies
 const getRandomMovie = (movies) => {
-  const randomIndex = Math.floor(Math.random() * movies.length);
+  const randomIndex = Math.floor(Math.random() * movies.length );
   const randomMovie = movies[randomIndex];
   return randomMovie;
 };
@@ -162,7 +162,7 @@ const displayRecommendedCarousel = (movieDetails) => {
   const carouselDivRecomended = document.getElementById('carousel-recomended');
   const carouselItems = document.createElement('div');
   carouselItems.setAttribute('class', 'carousel-items');
-
+  console.log(movieDetails);
   for (const movie of movieDetails) {
     const item = document.createElement('li');
     item.setAttribute('class', 'carousel-item');

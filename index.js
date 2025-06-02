@@ -57,7 +57,7 @@ app.get('/movie/:movieId', async (req, res) => {
   res.send(movieData)
 });
 
-const getMovieFromGenre = (genreId) => {
+const getMoviesFromGenre = (genreId) => {
   console.log(" Getting movies for genreId", genreId);
   const dataAsText = fs.readFileSync(`data/genre-movies-${genreId}.json`, 'utf8');
   const genreMovies = JSON.parse(dataAsText);
@@ -133,18 +133,20 @@ const mostFrequentGenre = (genreIds) => {
 };
 
 app.get('/recommendations', (req, res) => {
-  const likedMovieIds = readVotesFromFile();
+  const votedData = readVotesFromFile();
+  const likedMovieIds = votedData.likes;
+  const dislikeMovieIds = votedData.dislikes;
   console.log("Liked movie ID's:", likedMovieIds);
   const likedGenresIds = likedMovieIds.map(movieToGenreIds).flat();
   console.log("Liked genres ID's: ", likedGenresIds)
   const mostFrequent = mostFrequentGenre(likedGenresIds);
   console.log("Most frequent genre ID:", mostFrequent);
-  const getMovieData = getMovieFromGenre(mostFrequent);
-  console.log("Genres movies data", getMovieData);
+  const genreMoviesData = getMoviesFromGenre(mostFrequent);
+  console.log("Genres movies data", genreMoviesData);
   //inserire , restituiamo 5 film di quel genere escludono quelli che  l'utente 
-  const reccomendedMovies = genreMoviesData.result.data.result.filter ( movie => !likedMovieIds.includes(movie.id.toString()));
-  console.log("Recommend movies:", reccomendedMovies.slice(0, 5));
-  res.status(200).json({ message: 'This is a placeholder for recommendations' }); //Metteremo
+  const reccomendedMovies = genreMoviesData.results.filter ( movie => !likedMovieIds.includes(movie.id.toString()));
+  console.log("Recommend movies:", reccomendedMovies);
+  res.status(200).json({ suggestedoMovies: reccomendedMovies }); //Metteremo
   // la risposta strutturata come un file json con coppie chiave valore (strutturarlo)
 });
 
