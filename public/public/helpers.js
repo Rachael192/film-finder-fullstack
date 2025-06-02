@@ -27,9 +27,12 @@ const clearCurrentMovie = () => {
   const moviePosterDiv = document.getElementById('moviePoster');
   const movieTextDiv = document.getElementById('movieText');
   const carousel = document.getElementById('carousel');
+  const recomendedCarousel = document.getElementById('carousel-recomended');
+
   moviePosterDiv.innerHTML = '';
   movieTextDiv.innerHTML = '';
   carousel.innerHTML = '';
+  recomendedCarousel.innerHTML ='';
 }
 
 // After liking a movie, clears the current movie from the screen and gets another random movie
@@ -154,27 +157,27 @@ const displayCarousel = (movieDetails) => {
   }
   carouselDiv.appendChild(carouselItems);
 };
+//display reccomended Carousel
+const displayRecommendedCarousel = (movieDetails) => {
+  const carouselDivRecomended = document.getElementById('carousel-recomended');
+  const carouselItems = document.createElement('div');
+  carouselItems.setAttribute('class', 'carousel-items');
 
-// const displayRecommendedCarousel = (movieDetails) => {
-//   const carouselDivRecomended = document.getElementById('carousel-recomended');
-//   const carouselItems = document.createElement('div');
-//   carouselItems.setAttribute('class', 'carousel-items');
+  for (const movie of movieDetails) {
+    const item = document.createElement('li');
+    item.setAttribute('class', 'carousel-item');
+    const img = document.createElement('img');
+    img.setAttribute('src', `https://image.tmdb.org/t/p/original/${movie.poster_path}`);
+    img.setAttribute('height', '200px');
+    item.appendChild(img);
 
-//   for (const movie of movieDetails) {
-//     const item = document.createElement('li');
-//     item.setAttribute('class', 'carousel-item');
-//     const img = document.createElement('img');
-//     img.setAttribute('src', `https://image.tmdb.org/t/p/original/${movie.poster_path}`);
-//     img.setAttribute('height', '200px');
-//     item.appendChild(img);
+    const movieInfo = document.createElement('div');
+    movieInfo.setAttribute('class', 'movie-info');
+    movieInfo.innerHTML = `<h4>${movie.title}</h4>`;
+    item.appendChild(movieInfo);
 
-//     const movieInfo = document.createElement('div');
-//     movieInfo.setAttribute('class', 'movie-info');
-//     movieInfo.innerHTML = `<h4>${movie.production_companies[0].name}</h4>`;
-//     item.appendChild(movieInfo);
-
-//     carouselItems.appendChild(item);
-//   }
-//   carouselDivRecomended.appendChild(carouselItems);
-// };
+    carouselItems.appendChild(item);
+  }
+  carouselDivRecomended.appendChild(carouselItems);
+};
 
