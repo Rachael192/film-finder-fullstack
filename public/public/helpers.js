@@ -155,3 +155,26 @@ const displayCarousel = (movieDetails) => {
   carouselDiv.appendChild(carouselItems);
 };
 
+// const displayRecommendedCarousel = (movieDetails) => {
+//   const carouselDivRecomended = document.getElementById('carousel-recomended');
+//   const carouselItems = document.createElement('div');
+//   carouselItems.setAttribute('class', 'carousel-items');
+
+//   for (const movie of movieDetails) {
+//     const item = document.createElement('li');
+//     item.setAttribute('class', 'carousel-item');
+//     const img = document.createElement('img');
+//     img.setAttribute('src', `https://image.tmdb.org/t/p/original/${movie.poster_path}`);
+//     img.setAttribute('height', '200px');
+//     item.appendChild(img);
+
+//     const movieInfo = document.createElement('div');
+//     movieInfo.setAttribute('class', 'movie-info');
+//     movieInfo.innerHTML = `<h4>${movie.production_companies[0].name}</h4>`;
+//     item.appendChild(movieInfo);
+
+//     carouselItems.appendChild(item);
+//   }
+//   carouselDivRecomended.appendChild(carouselItems);
+// };
+

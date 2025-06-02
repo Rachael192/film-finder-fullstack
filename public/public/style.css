@@ -96,7 +96,7 @@ select {
   color: #910000;
 }
 
-#carousel {
+#carousel,#carousel-recomended {
   width: 100vw;
   height: 300px;
   padding: 10px;

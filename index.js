@@ -32,7 +32,7 @@ app.get('/movie/:movieId', async (req, res) => {
   try {
     fs.statSync(`data/movie-${movieId}.json`);
     console.log("trovato il file!")
-  } catch(error) {
+  } catch (error) {
     // ALLORA LO SCARICO
     // il file non esiste --> lo scarichiamo
     console.log("Getting movie details for ", movieId);
@@ -57,11 +57,17 @@ app.get('/movie/:movieId', async (req, res) => {
   res.send(movieData)
 });
 
+const getMovieFromGenre = (genreId) => {
+  console.log(" Getting movies for genreId", genreId);
+  const dataAsText = fs.readFileSync(`data/genre-movies-${genreId}.json`, 'utf8');
+  const genreMovies = JSON.parse(dataAsText);
+  return genreMovies;
+};
+
 app.get('/discover/movie', (req, res) => {
   console.log("/discover/movie params: ", req.query)
   const genreId = req.query.with_genres; // <-- SECURITY THREAT!
-  const dataAsText = fs.readFileSync(`data/genre-movies-${genreId}.json`, 'utf8');
-  const genreMovies = JSON.parse(dataAsText);
+  const genreMovies = getMovieFromGenre(genreId);
   res.send(genreMovies);
 })
 
@@ -74,9 +80,15 @@ app.post('/api/movie/like', (req, res) => {
     const votesObj = JSON.parse(votesText);
     console.log("votesObj BEFORE PUSH", votesObj);
     if (req.body.like) { // check if the user liked or disliked the movie
-      votesObj.likes.push(req.body.movieId); // add the movieId to the likes array
+      if (!votesObj.likes.includes(req.body.movieId)) {
+        votesObj.likes.push(req.body.movieId); // add the movieId to the likes array
+      }
+
     } else {
-      votesObj.dislikes.push(req.body.movieId); // add the movieId to the dislikes array
+      if (!votesObj.dislikes.includes(req.body.movieId)) {
+        votesObj.dislikes.push(req.body.movieId); // add the movieId to the dislikes array
+      }
+      // votesObj.likes = votesObj.likes.filter(id => id !== req.body.movieId); // remove the movieId from the likes array
     }
     console.log("votesObj AFTER PUSH", votesObj);
     fs.writeFileSync("data/votes.json", JSON.stringify(votesObj));
@@ -88,7 +100,57 @@ app.post('/api/movie/like', (req, res) => {
   res.status(200).json(responseObj);
 });
 
+const movieToGenreIds = (movieId) => {
+  const movieDataAsText = fs.readFileSync(`data/movie-${movieId}.json`, 'utf8');
+  const movieObj = JSON.parse(movieDataAsText);
+  const genresIds = movieObj.genres.map(g => g.id);
+  return genresIds;
+};
+
+
+const readVotesFromFile = () => {
+  const votesDataAsText = fs.readFileSync('data/votes.json', 'utf8');
+  const votesData = JSON.parse(votesDataAsText);
+  return votesData.likes;
+};
+
+const mostFrequentGenre = (genreIds) => {
+  const frequency = {};
+  let maxCount = 0;
+  let mostFrequent;
+
+  for (let i = 0; i < genreIds.length; i++) {
+    const genreId = genreIds[i];
+    frequency[genreId] = (frequency[genreId] || 0) + 1;
+    console.log("Frequency: ", frequency);
+    // Trovo il genere più frequente
+    if (frequency[genreId] > maxCount) {
+      maxCount = frequency[genreId];
+      mostFrequent = genreId;
+    }
+  }
+  return mostFrequent;
+};
+
+app.get('/recommendations', (req, res) => {
+  const likedMovieIds = readVotesFromFile();
+  console.log("Liked movie ID's:", likedMovieIds);
+  const likedGenresIds = likedMovieIds.map(movieToGenreIds).flat();
+  console.log("Liked genres ID's: ", likedGenresIds)
+  const mostFrequent = mostFrequentGenre(likedGenresIds);
+  console.log("Most frequent genre ID:", mostFrequent);
+  const getMovieData = getMovieFromGenre(mostFrequent);
+  console.log("Genres movies data", getMovieData);
+  //inserire , restituiamo 5 film di quel genere escludono quelli che  l'utente 
+  const reccomendedMovies = genreMoviesData.result.data.result.filter ( movie => !likedMovieIds.includes(movie.id.toString()));
+  console.log("Recommend movies:", reccomendedMovies.slice(0, 5));
+  res.status(200).json({ message: 'This is a placeholder for recommendations' }); //Metteremo
+  // la risposta strutturata come un file json con coppie chiave valore (strutturarlo)
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`) // http://localhost:3000
 });
 
+//ultimo inserire locandina per creare il nuovo carosello?? capire dove inserire l'endpoint 
+//"Get" 

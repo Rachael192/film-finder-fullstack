@@ -89,8 +89,13 @@ const showRandomMovie = async () => {
   displayMovie(randomMovie); // lo visualizzo
 
   // scarico i dettagli completi dei pprimi cinque film
-  const movieDetails = await getMovieDetails(movies.slice(0, 5));
+  const movieDetails = await getMovieDetails(movies);
   displayCarousel(movieDetails); // visualizzo il carosello
+  // const recommendedMovies = await getRecommendedMovies()
+/*const recommendedMovies= [ { "id": 977294, "poster_path": "/lFFDrFLXywFhy6khHes1LCFVMsL.jpg", "title": "Tin Soldier"} ];
+console.log("Going to display recommended movies: ", recommendedMovies);
+displayRecommendedCarousel(recommendedMovies);
+*/
 };
 
 getGenres().then(populateGenreDropdown);

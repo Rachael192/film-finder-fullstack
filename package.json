@@ -1,11 +1,11 @@
 {
-  "name": "film-finder-backend-gigi",
+  "name": "film-finder-backend-rachael",
   "version": "1.0.0",
   "description": "il mio backend bellissimo",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "nodemon",
+    "watch": "nodemon --ignore data/",
     "prova": "node test.js"
   },
   "repository": {
