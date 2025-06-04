@@ -32,7 +32,7 @@ const clearCurrentMovie = () => {
   moviePosterDiv.innerHTML = '';
   movieTextDiv.innerHTML = '';
   carousel.innerHTML = '';
-  recomendedCarousel.innerHTML ='';
+  recomendedCarousel.innerHTML = '';
 }
 
 // After liking a movie, clears the current movie from the screen and gets another random movie
@@ -48,7 +48,7 @@ const likeMovie = async (event) => {
 // After disliking a movie, clears the current movie from the screen and gets another random movie
 const dislikeMovie = (event) => {
   console.log("Clicked Button: ", event.target); // event.target is the Dislike button
-  const movieId = document.getElementById("likeBtn").getAttribute("movieId"); // Get the movie ID from the button
+  const movieId = document.getElementById("dislikeBtn").getAttribute("movieId"); // Get the movie ID from the button
   console.log("Showed movie ID: ", movieId);
   sendLikeToServer(movieId, false); // Send data to server with like = false
   clearCurrentMovie();
@@ -105,7 +105,7 @@ const createMovieOverview = (overview) => {
 
 // Returns a random movie from the first page of movies
 const getRandomMovie = (movies) => {
-  const randomIndex = Math.floor(Math.random() * movies.length );
+  const randomIndex = Math.floor(Math.random() * movies.length);
   const randomMovie = movies[randomIndex];
   return randomMovie;
 };

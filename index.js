@@ -59,7 +59,7 @@ app.get('/movie/:movieId', async (req, res) => {
 
 const getMoviesFromGenre = (genreId) => {
   console.log(" Getting movies for genreId", genreId);
-  const dataAsText = fs.readFileSync(`data/genre-movies-${genreId}.json`, 'utf8');
+  const dataAsText = fs.readFileSync(`data/genre-movies-${genreId}.json`, 'utf-8');
   const genreMovies = JSON.parse(dataAsText);
   return genreMovies;
 };
@@ -67,7 +67,7 @@ const getMoviesFromGenre = (genreId) => {
 app.get('/discover/movie', (req, res) => {
   console.log("/discover/movie params: ", req.query)
   const genreId = req.query.with_genres; // <-- SECURITY THREAT!
-  const genreMovies = getMovieFromGenre(genreId);
+  const genreMovies = getMoviesFromGenre(genreId);
   res.send(genreMovies);
 })
 
@@ -101,7 +101,7 @@ app.post('/api/movie/like', (req, res) => {
 });
 
 const movieToGenreIds = (movieId) => {
-  const movieDataAsText = fs.readFileSync(`data/movie-${movieId}.json`, 'utf8');
+  const movieDataAsText = fs.readFileSync(`data/movie-${movieId}.json`, 'utf-8');
   const movieObj = JSON.parse(movieDataAsText);
   const genresIds = movieObj.genres.map(g => g.id);
   return genresIds;
@@ -109,7 +109,7 @@ const movieToGenreIds = (movieId) => {
 
 
 const readVotesFromFile = () => {
-  const votesDataAsText = fs.readFileSync('data/votes.json', 'utf8');
+  const votesDataAsText = fs.readFileSync('data/votes.json', 'utf-8');
   const votesData = JSON.parse(votesDataAsText);
   return votesData.likes;
 };
@@ -143,10 +143,11 @@ app.get('/recommendations', (req, res) => {
   console.log("Most frequent genre ID:", mostFrequent);
   const genreMoviesData = getMoviesFromGenre(mostFrequent);
   console.log("Genres movies data", genreMoviesData);
+  const votedMovieIds = likedMovieIds.concat(dislikeMovieIds);
   //inserire , restituiamo 5 film di quel genere escludono quelli che  l'utente 
-  const reccomendedMovies = genreMoviesData.results.filter ( movie => !likedMovieIds.includes(movie.id.toString()));
+  const reccomendedMovies = genreMoviesData.results.filter ( movie => !votedMovieIds.includes(movie.id.toString())).slice(0,5);
   console.log("Recommend movies:", reccomendedMovies);
-  res.status(200).json({ suggestedoMovies: reccomendedMovies }); //Metteremo
+  res.status(200).json({ suggestedMovies: reccomendedMovies }); //Metteremo
   // la risposta strutturata come un file json con coppie chiave valore (strutturarlo)
 });
 

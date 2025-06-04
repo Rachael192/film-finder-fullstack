@@ -75,8 +75,8 @@ const getMovieDetails = async (movies) => {
   return movieDetails;
 };
 const getRecommendedMovies = async () => {
-  const reccomendedEndpoint = '/recommendations'
-  const urlToFetch = tmdbBaseLocale + reccomendedEndpoint
+  const recommendedEndpoint = '/recommendations'
+  const urlToFetch = tmdbBaseLocale + recommendedEndpoint;
   try {
     const response = await fetch(urlToFetch);
     if (response.ok) {
@@ -93,6 +93,7 @@ const getRecommendedMovies = async () => {
 
 // Gets a list of movies and ultimately displays the info of a random movie from the list
 const showRandomMovie = async () => {
+  try{
   console.log(" goin to show random movie...");
   const movieInfo = document.getElementById('movieInfo');
   if (movieInfo.childNodes.length > 0) {
@@ -111,7 +112,9 @@ const showRandomMovie = async () => {
   //const recommendedMovies= [ { "id": 977294, "poster_path": "/lFFDrFLXywFhy6khHes1LCFVMsL.jpg", "title": "Tin Soldier"} ];
   console.log("Going to display recommended movies: ", recommendedMovies);
   displayRecommendedCarousel(recommendedMovies);
-
+  } catch(error){
+    console.error("Failed to fetch or display recommende movies:", error);
+  }
 };
 
 getGenres().then(populateGenreDropdown);
