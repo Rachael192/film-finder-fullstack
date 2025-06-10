@@ -1,3 +1,6 @@
+
+
+
 console.log("App starting...");
 const express = require('express');
 const fs = require('node:fs');
@@ -5,6 +8,12 @@ const bodyParser = require('body-parser');
 
 const app = express()
 const port = 3000
+
+const sqlite3 = require('sqlite3');
+const dbPath ='C:/DEV/databases/moviesDB'
+const db = new sqlite3.Database(dbPath);
+
+
 app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -12,13 +21,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const tmdbKey = '4048775a0f068af3048837ff0341a4f7';
 const tmdbBaseUrl = 'https://api.themoviedb.org/3';
 
-app.get('/genre/movie/list', (req, res) => {
-  console.log(req.query);
-  const dataAsText = fs.readFileSync('data/genres.json', 'utf8');
-  const genres = JSON.parse(dataAsText);
-  res.send(genres)
-});
 
+app.get ('/genre/movie/list', async(req,res) => {
+  try {
+    const genres = db.all("SELECT * FROM genres", [], (err, rows) => {
+      if (err) {
+        console.error("Error fetching genres from database:", err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+    })
+    res.status(200).send({
+      genres: genres
+    });
+  }
+  catch (error) {
+    console.error("Error fetching genres:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
 
 app.get('/movie/:movieId', async (req, res) => {
   console.log("/movie/movieId ", req.params.movieId);
@@ -150,6 +171,22 @@ app.get('/recommendations', (req, res) => {
   res.status(200).json({ suggestedMovies: reccomendedMovies }); //Metteremo
   // la risposta strutturata come un file json con coppie chiave valore (strutturarlo)
 });
+
+// SELECT 
+// FROM movies AS m
+// LEFT JOIN votes AS v ON m.id = v.movie_id
+// JOIN movie_genres AS mg ON mg.movie_id = m.id
+// WHERE is_like IS NULL AND genre_id = (
+// 	SELECT mg.genre_id
+// 	FROM votes v
+// 	JOIN movie_genres mg ON v.movie_id = mg.movie_id
+// 	WHERE v.is_like = 1
+// 	GROUP BY genre_id 
+// 	ORDER BY COUNT() DESC
+// 	LIMIT 1
+// ) 
+// ORDER BY m.vote_average DESC
+// LIMIT 5;
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`) // http://localhost:3000
